@@ -1,0 +1,58 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}DOTA2 analyzer{% endblock %}
+
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+
+</div>
+<style type=text/css>{{ get_resource_as_string('static/style.css') }}</style>
+<script>
+
+    var selectedHeroes = []
+    var heroesLeft = 5
+
+    function myFunction(elem){
+        heroesLeft -= 1
+        var heroID = elem.alt
+        selectedHeroes.push(heroID)
+        console.log(selectedHeroes)
+
+    }
+
+    function predict() {
+        if (selectedHeroes.length < 5) {
+            alert("Not enough heroes selected!")
+        }
+        else if(selectedHeroes.length > 5) {
+            alert("Too many heroes selected. Clearing selections...")
+            selectedHeroes = []
+        }
+    }
+
+</script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="jumbotron">
+        <img src="http://www.userlogos.org/files/logos/Kravlenissen/Dota-2(4x3)1-1.png">
+        <h1>Match analyzer</h1>
+        <p>The database contains {{count}} recorded matches.</p>
+    </div>
+<div class="container">
+    <div class="row">
+        <p>Currently {{heroes | length}} playable heroes. Pick 5 to form a team.</p>
+    {% for image in heroes %}
+        <div class="col-md-1" style="margin-right:0px; margin-left:0px; display:inline-block; padding:0; cursor: pointer;">
+                <img onclick="myFunction(this)" src="{{image['url_vertical_portrait']}}" class="img-responsive" alt={{image['id']}}>
+                <span>{{image['localized_name']}}</span>
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="row">
+        <button onclick="predict()" type="button" class="btn btn-default">Predict!</button>
+    </div>
+    </div>
+{% endblock %}

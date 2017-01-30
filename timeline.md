@@ -1,0 +1,4 @@
+- 22.01: 2h, finding data and searching for recent studies
+- 23.01: 1.5h, creating the presentation + report
+- 28.01. 3h. Creating database connections and looking info about ML-techniques
+- 30.01. 4h Starting logistic regression
