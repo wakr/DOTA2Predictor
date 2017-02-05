@@ -2,3 +2,4 @@
 - 23.01: 1.5h, creating the presentation + report
 - 28.01. 3h. Creating database connections and looking info about ML-techniques
 - 30.01. 4h Starting logistic regression
+- 04.02. 5h Fitting the model

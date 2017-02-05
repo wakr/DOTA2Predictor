@@ -11,4 +11,4 @@ db = client.dota2
 
 
 def getDocuments():
-    return list(db.matches.find().limit(50))
+    return list(db.matches.find().limit(500))

@@ -1,49 +1,47 @@
-from toolz.dicttoolz import keyfilter, assoc, dissoc
 from sklearn.linear_model import LogisticRegression
 from sklearn import datasets, linear_model
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.metrics import accuracy_score
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
 
 
 class DOTA2Predictor:
 
-    def decideSide(self, playerSlot):
-        if playerSlot < 128:
-            return 'R'
-        else:
-            return 'D'
 
+    def getTrainingRelation(self):
+        return 0
 
-    def filterFeatures(self, match):
-        usableKeys = ['players', 'radiant_win', 'hero_id', 'player_slot']
-        isUsable = lambda k: k in usableKeys
-        toplvlFiltered = keyfilter(isUsable, match)
+    def predict(self, features):
+        return self.model.predict(features)
 
-        filteredPlayers = []
-        for player in toplvlFiltered['players']:
-            side = self.decideSide(player['player_slot'])
-            playerData = assoc(keyfilter(isUsable, player), 'team', side)
-            playerData = dissoc(playerData, 'player_slot')
-            filteredPlayers.append(playerData)
-        toplvlFiltered['players'] = filteredPlayers
+    def getScore(self, X, Y):
+        return self.model.score(X, Y)
 
-        return toplvlFiltered
+    def makeModel(self):
+        kf = KFold(n_splits=2)
+        train, test = train_test_split(self.data, train_size=0.8)
 
-    def formFeatureMatrix(self, matches):
-        pass
+        matrixedTrain = pd.get_dummies(train).as_matrix()
+        trainX = matrixedTrain[:, :-1]  # take the end result away
+        trainY = matrixedTrain[:, -1]  # # dire|radiant|direwon==1
 
-    def parseMatches(self, matches, possibleHeroes):
-        heroIDs = sorted(list(map(lambda h: h['id'], possibleHeroes)))
+        matrixedTest = pd.get_dummies(test).as_matrix()
+        testX = matrixedTest[:, :-1]
+        testY = matrixedTest[:, -1]
 
-        heroSelections = np.append(np.zeros(2 * len(heroIDs)), np.zeros(1)) # Radiant, Dire, Result
-        parsedMatches = list(map(lambda match: self.filterFeatures(match), matches))
-        print(parsedMatches[0])
+        logreg = LogisticRegression()
+        logreg.fit(trainX, trainY)
+        self.model = logreg
 
-        featureMatrix = self.formFeatureMatrix(parsedMatches)
+        print("Test accuracy: " + self.getScore(trainX, trainY))
+        print("Train  accuracy" + self.getScore(testX, testY))
 
-
-
-    def __init__(self, matches, possibleHeroes):
-        self.parseMatches(matches, possibleHeroes)
+    def __init__(self, featureVector):
+        self.data = featureVector
+        self.model = None
+        self.makeModel()
 
