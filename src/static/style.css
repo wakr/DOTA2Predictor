@@ -1,6 +1,19 @@
+.selected {
+    filter: grayscale(100%);
+    transform: scale(0.5);
+}
+
+.img-responsive {
+    max-width: 75%;
+}
+
 img:hover {
     transform: scale(1.1);
     z-index: 1;
+}
+
+.row {
+    margin-bottom: 50px;
 }
 
 span {
@@ -8,7 +21,7 @@ span {
     font-size: 12px;
     display: block;
     text-overflow: clip;
-    width: 80px;
+    width: 60px;
     height: 16px;
     font-weight: bold;
 }

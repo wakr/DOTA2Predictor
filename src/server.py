@@ -1,17 +1,18 @@
 import dota2api
 import json
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_bootstrap import Bootstrap
 
 from database.mongo import getDocuments
-from settings import STEAMKEY
+from settings import STEAMKEY, APPKEY
 from machine_learning.match_learner import DOTA2Predictor
 from machine_learning.match_parser import parseMatches
 
 # Application initializing
 api = dota2api.Initialise(STEAMKEY)
 app = Flask(__name__)
+app.secret_key = APPKEY
 app.config['DEBUG'] = True
 Bootstrap(app)
 
@@ -41,11 +42,12 @@ def main():
 @app.route('/results', methods=['GET', 'POST'])
 def resultView():
     if request.method == 'GET':
-        return 'lol'
+        picks = session['picks']
+        return 'Hello, World! You picked %s' % (picks)
     else:
         jsonData = json.dumps(request.get_json())
-        print(jsonData)
-        return redirect(url_for('resultView'))
+        session['picks'] = jsonData
+        return redirect(url_for('resultView'), code=302)
 
 
 if __name__ == '__main__':

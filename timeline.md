@@ -3,3 +3,6 @@
 - 28.01. 3h. Creating database connections and looking info about ML-techniques
 - 30.01. 4h Starting logistic regression
 - 04.02. 5h Fitting the model
+- 05.02. 2h K-folding. 25% error on train, 45% on test
+- 07.02. 2h writing the report
+- 08.02. 
