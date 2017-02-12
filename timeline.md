@@ -1,3 +1,4 @@
+- 	 4h lectures
 - 22.01: 2h, finding data and searching for recent studies
 - 23.01: 1.5h, creating the presentation + report
 - 28.01. 3h. Creating database connections and looking info about ML-techniques
@@ -5,4 +6,6 @@
 - 04.02. 5h Fitting the model
 - 05.02. 2h K-folding. 25% error on train, 45% on test
 - 07.02. 2h writing the report
-- 08.02. 
+- 08.02. 4h finish report & build the web-client pipeline 
+- 10.02. 4h finish web-client pipeline
+- 12.02. 3h Analyze the selection data

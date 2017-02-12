@@ -11,6 +11,13 @@ def decideSide(playerSlot):
         return 'D'
 
 
+def picksToHeroVector(picks, amountOfHeroes):
+    featureVector = amountOfHeroes * [0]
+    for heroID in picks:
+        featureVector[heroID - 1] = 1
+    return featureVector
+
+
 def filterBadMatches(parsedMatches):
     isEnoughPlayers = lambda m: len(m['players']) == 10
     return list(filter(isEnoughPlayers, parsedMatches))
@@ -33,7 +40,7 @@ def filterFeatures(match):
 
 
 def formFeatureMatrix(heroIDs, match):
-    currentHeroAmount = len(heroIDs)
+    currentHeroAmount = len(heroIDs) + 1
     result = match['radiant_win']  # True if radiant won
     teams = groupby('team', match['players'])
     dire = teams['D']
@@ -72,3 +79,10 @@ def parseMatches(matches, possibleHeroes):
     featureMatrices = list(map(lambda m: formFeatureMatrix(heroIDs, m), parsedMatches))
 
     return pd.DataFrame(featureMatrices)
+
+def parseInputToFeatures(data, possibleHeroes):
+    heroCount = len(list(map(lambda h: h['id'], possibleHeroes))) + 1
+    direSide = data[0:5]
+    radiantSide = data[5:10]
+
+    return picksToHeroVector(direSide, heroCount) + picksToHeroVector(radiantSide, heroCount)

@@ -39,6 +39,9 @@ pip-delete-this-directory.txt
 
 # own
 venv
+match_data.json
+
+
 
 # Unit test / coverage reports
 htmlcov/

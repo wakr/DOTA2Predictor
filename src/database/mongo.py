@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from settings import DBUSER, DBPWD
+from src.settings import DBUSER, DBPWD
 
 
 def getURL(username, password):
@@ -11,4 +11,11 @@ db = client.dota2
 
 
 def getDocuments():
-    return list(db.matches.find().limit(50))
+    result = []
+    try:
+        result = list(db.matches.find({}, {"players.hero_id": 1, "players.player_slot": 1,
+                                           "players.account_id": 1, "radiant_win": 1})
+                                .limit(2000))
+    except Exception as e:
+        print(e)
+    return result
