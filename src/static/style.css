@@ -16,6 +16,10 @@ img:hover {
     margin-bottom: 50px;
 }
 
+.played_heroes {
+    display: inline-flex;
+}
+
 span {
     text-align: center;
     font-size: 12px;

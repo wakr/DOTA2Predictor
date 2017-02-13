@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
-{% block title %}DOTA2 analyzer{% endblock %}
-
+{% block title %} DOTA2 analyzer {% endblock %}
+<head>lol</head>
 
 {% block navbar %}
 <div class="navbar navbar-fixed-top">
@@ -9,6 +9,8 @@
 <style type=text/css>{{ get_resource_as_string('static/style.css') }}</style>
 <script type=text/javascript src="{{
   url_for('static', filename='main.js') }}"></script>
+<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="http://mpld3.github.io/js/mpld3.v0.2.js"></script>
 {% endblock %}
 
 
@@ -20,8 +22,19 @@
     <p>The accuracy of the current model is {{test_accuracy}}%</p>
 </div>
 <div class="container">
+    <div class="analysis">
+        <div class="played_heroes">
+            <div id="fig_1"></div>
+            <div class="top10">
+                <p>Top 10 most played heroes are:</p>
+                {% for hero in top10 %}
+                <p>{{loop.index}}. {{hero[0]['localized_name']}} ({{hero[1]}})</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     <div class="row">
-        <p>Currently {{heroes | length}} playable heroes. Pick 5+5 to form a team.</p>
+        <p>Currently {{heroes | length}} playable heroes. Pick 5+5 to form a team. First Dire then Radiant.</p>
         <div id="counter">
             <p>10</p>
         </div>
@@ -39,4 +52,8 @@
         <button onclick="predict()" type="button" class="btn btn-default">Predict!</button>
     </div>
 </div>
+<script>
+    var json01 = JSON.parse({{chart1|tojson}})
+    mpld3.draw_figure("fig_1", json01)
+</script>
 {% endblock %}

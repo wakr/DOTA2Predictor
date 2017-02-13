@@ -8,4 +8,5 @@
 - 07.02. 2h writing the report
 - 08.02. 4h finish report & build the web-client pipeline 
 - 10.02. 4h finish web-client pipeline
-- 12.02. 3h Analyze the selection data
+- 12.02. 5h Analyze the selection data & Produce barchart for page
+- 13.02. 4h Internal improvements & top10 most played heroes
