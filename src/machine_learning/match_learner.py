@@ -8,7 +8,6 @@ from machine_learning.pre_analyzer import *
 import matplotlib.pyplot as plt, mpld3
 from mpld3 import plugins
 import numpy as np
-import pandas as pd
 import operator
 
 
@@ -77,8 +76,9 @@ class DOTA2Predictor:
         kf = KFold(n_splits=10)
 
         matrixedData = self.data.as_matrix() # will be appended by top 10 played heroes
-        m1 = matrixedData[:20000, :] # use for analyze
-        m2 = matrixedData[20000:, :] # use for model fitting
+        split_len = int(len(matrixedData) * 0.2)
+        m1 = matrixedData[:split_len, :] # use for analyze
+        m2 = matrixedData[split_len:, :] # use for model fitting
         self.picked_heroes = m1
         train, test = train_test_split(m2, train_size=0.8)
 
