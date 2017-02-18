@@ -19,7 +19,7 @@ def getDocuments():
     try:
         result = list(db.matches.find({}, {"players.hero_id": 1, "players.player_slot": 1,
                                            "players.account_id": 1, "radiant_win": 1})
-                                .limit(1000))
+                                )
     except Exception as e:
         print(e)
         return e
