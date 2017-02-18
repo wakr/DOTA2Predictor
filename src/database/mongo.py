@@ -9,8 +9,8 @@ def getURL(username, password):
 def getURL2(username, password):
     return "mongodb://%s:%s@ds155509.mlab.com:55509/dota2_large" % (username, password)
 
-client = MongoClient(getURL2(DBUSER, DBPWD))
-db = client.dota2_large
+client = MongoClient(getURL(DBUSER, DBPWD))
+db = client.dota2
 
 print(client)
 
