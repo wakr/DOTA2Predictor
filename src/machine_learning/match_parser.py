@@ -45,8 +45,10 @@ def formFeatureMatrix(heroIDs, match):
     teams = groupby('team', match['players'])
     dire = teams['D']
     radiant = teams['R']
+    #print(dire + radiant)
+    #print(match)
 
-    # Dire is first, the Radiant
+    # Dire is first, then Radiant
 
     matchVector = []
     for player in dire:
@@ -55,6 +57,8 @@ def formFeatureMatrix(heroIDs, match):
         matchVector.append(player['hero_id'])
 
     matchVector.append(result)
+    #print(matchVector)
+
 
     finalVector = list(concat([(2 * currentHeroAmount) * [0], [0]]))
     for direPick in matchVector[:5]:
@@ -64,7 +68,7 @@ def formFeatureMatrix(heroIDs, match):
         normalizeRadiantPick = currentHeroAmount + (radiantPick - 1)
         finalVector[normalizeRadiantPick] = 1
 
-    if result:
+    if result > 0:
         finalVector[-1] = 0 # dire lost aka radiant won
     else:
         finalVector[-1] = 1  # dire|radiant|direwon
@@ -73,10 +77,10 @@ def formFeatureMatrix(heroIDs, match):
 
 
 def parseMatches(matches, possibleHeroes):
-    heroIDs = sorted(list(map(lambda h: h['id'], possibleHeroes)))
-    parsedMatches = map(lambda match: filterFeatures(match), matches)
+    heroIDs = sorted([h['id'] for h in possibleHeroes])
+    parsedMatches = map(lambda match: filterFeatures(match), matches) # TODO: change to list comprehensions
     parsedMatches = filterBadMatches(parsedMatches)
-    featureMatrices = list(map(lambda m: formFeatureMatrix(heroIDs, m), parsedMatches))
+    featureMatrices = [formFeatureMatrix(heroIDs, m) for m in parsedMatches]
 
     return pd.DataFrame(featureMatrices)
 
@@ -84,5 +88,7 @@ def parseInputToFeatures(data, possibleHeroes):
     heroCount = len(list(map(lambda h: h['id'], possibleHeroes))) + 1
     direSide = data[0:5]
     radiantSide = data[5:10]
-
-    return picksToHeroVector(direSide, heroCount) + picksToHeroVector(radiantSide, heroCount)
+    picksBinaryVector = picksToHeroVector(direSide, heroCount) + picksToHeroVector(radiantSide, heroCount)
+    #print(direSide + radiantSide)
+    #print(picksBinaryVector)
+    return picksBinaryVector

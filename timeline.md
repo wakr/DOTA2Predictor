@@ -10,3 +10,5 @@
 - 10.02. 4h finish web-client pipeline
 - 12.02. 5h Analyze the selection data & Produce barchart for page
 - 13.02. 4h Internal improvements & top10 most played heroes
+- 15.02. 5h Increasing the accuracy. Trying ensemble & feature selection
+- 16.02. 6h Trying to improve the model

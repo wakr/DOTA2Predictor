@@ -1,5 +1,6 @@
 import dota2api
 import json
+import _thread
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_bootstrap import Bootstrap
@@ -8,13 +9,15 @@ from database.mongo import getDocuments
 from settings import STEAMKEY, APPKEY
 from machine_learning.match_learner import DOTA2Predictor
 from machine_learning.match_parser import parseMatches, parseInputToFeatures
+from data_mining.dota2data import main as mine
 
 # Application configuration
 api = dota2api.Initialise(STEAMKEY)
 app = Flask(__name__)
 app.secret_key = APPKEY
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 Bootstrap(app)
+miningOnStartUp = False
 
 def get_resource_as_string(name, charset='utf-8'):
     with app.open_resource(name) as f:
@@ -41,7 +44,10 @@ def initialize_app():
 def main():
     count = len(matches)
     test_accuracy = 100 * round((1 - predictor.test_error_mean), 3)
-    top10Heroes = [(heroes[x[0]-1], x[1]) for i, x in enumerate(predictor.top10Heroes)]
+    h = {}
+    for hero in heroes:
+        h[hero['id']] = hero
+    top10Heroes = [(h[x[0]], x[1]) for i, x in enumerate(predictor.top10Heroes)]
 
     return render_template('index.html', count=count, heroes=heroes,
                            test_accuracy=test_accuracy, chart1=json.dumps(predictor.chart1),
@@ -53,8 +59,9 @@ def resultView():
     if request.method == 'GET':
         picks = list(map(int, session['picks']))
         predict_vector = parseInputToFeatures(picks, heroes)
-        prediction = list(map(lambda p: round(p, ndigits=2), predictor.predict(predict_vector, True)[0]))
-        return render_template('results.html', dire_pred=prediction[0], radiant_pred=prediction[1])
+        prediction = [round(p, ndigits=2) for p in predictor.predict(predict_vector, True)[0]]
+        winner = "Radiant" if predictor.predict(predict_vector)[0] else "Dire"
+        return render_template('results.html', dire_pred=prediction[0] * 100, radiant_pred=prediction[1] * 100, winner=winner)
     else:
         jsonData = request.get_json()
         session['picks'] = jsonData
@@ -65,4 +72,5 @@ def resultView():
 
 if __name__ == '__main__':
     initialize_app()
+    _thread.start_new_thread(mine, ()) if miningOnStartUp else None
     app.run()
