@@ -74,7 +74,7 @@ def resultView():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    print("Using port: " + port)
+    print("Using port: " + str(port))
     initialize_app()
     _thread.start_new_thread(mine, ()) if miningOnStartUp else None
     app.run(host='0.0.0.0', port=port)
