@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = APPKEY
 app.config['DEBUG'] = False
 Bootstrap(app)
-miningOnStartUp = True
+miningOnStartUp = False
 
 def get_resource_as_string(name, charset='utf-8'):
     with app.open_resource(name) as f:
@@ -55,19 +55,22 @@ def main():
                            test_accuracy=test_accuracy, chart1=json.dumps(predictor.chart1),
                            top10=top10Heroes)
 
+picks = []
 
-@app.route('/results', methods=['GET', 'POST'])
+
+@app.route('/results', methods=['POST', 'GET'])
 def resultView():
-    if request.method == 'GET':
-        picks = list(map(int, session['picks']))
+    global picks
+    if request.method == "POST":
+        jsonData = request.get_json()
+        picks = [int(p) for p in jsonData]
+        return "Post received"
+    else:
+        print(picks)
         predict_vector = parseInputToFeatures(picks, heroes)
         prediction = [round(p, ndigits=2) for p in predictor.predict(predict_vector, True)[0]]
         winner = "Radiant" if predictor.predict(predict_vector)[0] else "Dire"
         return render_template('results.html', dire_pred=prediction[0] * 100, radiant_pred=prediction[1] * 100, winner=winner)
-    else:
-        jsonData = request.get_json()
-        session['picks'] = jsonData
-        return redirect(url_for('resultView'), code=302)
 
 
 ############################################################

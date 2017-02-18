@@ -48,7 +48,7 @@ class DOTA2Predictor:
             radiantSide = match[hero_count_in_features:]
             matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide) # with real ID's
 
-            cfs = mls + get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) + get_counterSynergy(matchHeroes, self.counterSynergy)
+            cfs = mls #+ get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) + get_counterSynergy(matchHeroes, self.counterSynergy)
                 #+ get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
                 #+ get_counterSynergy(matchHeroes, self.counterSynergy) \
                 #+ get_winlosses(matchHeroes, self.winLossRatios) \

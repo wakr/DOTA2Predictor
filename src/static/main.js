@@ -61,6 +61,6 @@
         }
         else { // make prediction
             sendPost()
-            window.location.href = "/results";
+            //window.location.href = "/results";
         }
      }
