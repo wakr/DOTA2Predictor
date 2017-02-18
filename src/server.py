@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = APPKEY
 app.config['DEBUG'] = False
 Bootstrap(app)
-miningOnStartUp = False
+miningOnStartUp = True
 
 def get_resource_as_string(name, charset='utf-8'):
     with app.open_resource(name) as f:
