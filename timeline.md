@@ -12,3 +12,9 @@
 - 13.02. 4h Internal improvements & top10 most played heroes
 - 15.02. 5h Increasing the accuracy. Trying ensemble & feature selection
 - 16.02. 6h Trying to improve the model
+- 17.02. 5h website + crossfeatures
+- 18.02. 3h heroku + website
+- 20.02. 3h writing report + fixes
+- 21.02. 2h writing
+- 24.04. 1h peer-review
+- 26.04. 3h Export images and start working report

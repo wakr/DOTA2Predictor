@@ -45,8 +45,6 @@ def formFeatureMatrix(heroIDs, match):
     teams = groupby('team', match['players'])
     dire = teams['D']
     radiant = teams['R']
-    #print(dire + radiant)
-    #print(match)
 
     # Dire is first, then Radiant
 
@@ -57,8 +55,6 @@ def formFeatureMatrix(heroIDs, match):
         matchVector.append(player['hero_id'])
 
     matchVector.append(result)
-    #print(matchVector)
-
 
     finalVector = list(concat([(2 * currentHeroAmount) * [0], [0]]))
     for direPick in matchVector[:5]:
@@ -89,6 +85,4 @@ def parseInputToFeatures(data, possibleHeroes):
     direSide = data[0:5]
     radiantSide = data[5:10]
     picksBinaryVector = picksToHeroVector(direSide, heroCount) + picksToHeroVector(radiantSide, heroCount)
-    #print(direSide + radiantSide)
-    #print(picksBinaryVector)
     return picksBinaryVector

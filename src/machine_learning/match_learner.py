@@ -38,31 +38,43 @@ class DOTA2Predictor:
         self.makeModel()
 
 
-    def appendCrossFeatures(self, X):
-        # append win/loss
+    def appendCrossFeatures(self, X, prediction=False):
         hero_count_in_features = self.hero_count + 1
-        X2 = []
-        for match in X:
-            mls = match.tolist()
-            direSide = match[:hero_count_in_features]
-            radiantSide = match[hero_count_in_features:]
-            matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide) # with real ID's
 
-            cfs = mls #+ get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) + get_counterSynergy(matchHeroes, self.counterSynergy)
-                #+ get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
-                #+ get_counterSynergy(matchHeroes, self.counterSynergy) \
-                #+ get_winlosses(matchHeroes, self.winLossRatios) \
-                #+ get_synergy_rate(matchHeroes, self.synergyPairs) \
-                #+ get_distr_amount(matchHeroes, self.top10Heroes) \
+        # the data comes as a list
+        if prediction:
+            direSide = X[:hero_count_in_features]
+            radiantSide = X[hero_count_in_features:]
+            matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide)  # with real ID's
 
-            X2.append(cfs)
-        return np.matrix(X2)
+            enriched = X + get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
+                  + get_counterSynergy(matchHeroes, self.counterSynergy) \
+                  + get_winlosses(matchHeroes, self.winLossRatios) \
+                  + get_synergy_rate(matchHeroes, self.synergyPairs) \
+                  + get_distr_amount(matchHeroes, self.top10Heroes)
+            return enriched
+        else:
+            # append win/loss
+            X2 = []
+            for match in X:
+                mls = match.tolist()
+                direSide = match[:hero_count_in_features]
+                radiantSide = match[hero_count_in_features:]
+                matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide) # with real ID's
 
+                cfs = mls \
+                    + get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
+                    + get_counterSynergy(matchHeroes, self.counterSynergy) \
+                    + get_winlosses(matchHeroes, self.winLossRatios) \
+                    + get_synergy_rate(matchHeroes, self.synergyPairs) \
+                    + get_distr_amount(matchHeroes, self.top10Heroes) \
 
-
+                X2.append(cfs)
+            return np.matrix(X2)
 
     def predict(self, features, prob=False):
-        f = np.array(features).reshape(1, -1)
+        crossF = self.appendCrossFeatures(features, True)
+        f = np.array(crossF).reshape(1, -1)
         if prob:
             prediction = self.model.predict_proba(f)
             return prediction
@@ -76,7 +88,7 @@ class DOTA2Predictor:
         kf = KFold(n_splits=10)
 
         matrixedData = self.data.as_matrix() # will be appended by top 10 played heroes
-        split_len = int(len(matrixedData) * 0.2)
+        split_len = int(len(matrixedData) * 0.4) # reserving 40% of the data for analysis
         m1 = matrixedData[:split_len, :] # use for analyze
         m2 = matrixedData[split_len:, :] # use for model fitting
         self.picked_heroes = m1
@@ -160,7 +172,7 @@ class DOTA2Predictor:
         for ID in h.keys():
             val = h[ID]
             try:
-                wl_ratio = val["win"] / val["loss"]
+                wl_ratio = val["win"] / (val["win"] + val["loss"])
                 wl[ID] = round(wl_ratio, 3)
             except Exception:
                 wl[ID] = 0
@@ -191,15 +203,19 @@ class DOTA2Predictor:
                 for pairID in dt:
                     if result: # dire won
                         winMatrix[ID, pairID] += 1
+                        winMatrix[pairID, ID] += 1
                     else:
                         lossMatrix[ID, pairID] += 1
+                        lossMatrix[pairID, ID] += 1
 
             for ID in rt:
                 for pairID in rt:
                     if not result:  # radiant won
                         winMatrix[ID, pairID] += 1
+                        winMatrix[pairID, ID] += 1
                     else:
                         lossMatrix[ID, pairID] += 1
+                        lossMatrix[pairID, ID] += 1
 
         for i in range(0, hero_count_in_features):
             for j in range(0, hero_count_in_features):
@@ -210,12 +226,19 @@ class DOTA2Predictor:
                     if not totalSum:
                         ratioMatrix[i, j] = 0
                     else:
-                        ratioMatrix[i, j] = round(winMatrix[i, j] / totalSum, 2)
+                        pass
+                        ratioMatrix[i, j] = round(winMatrix[i, j] / totalSum, 4)
 
 
         self.winnlossSynergy = ratioMatrix
-        #plt.imshow(ratioMatrix, cmap='terrain', interpolation='hanning', vmin=0)
+        #plt.figure(4)
+        #plt.xlabel("HeroID")
+        #plt.ylabel("HeroID")
+        #plt.title("Pairwise synergies")
+        #plt.imshow(ratioMatrix, origin="low", interpolation="none", aspect="auto", cmap="inferno")
+        #plt.colorbar()
         #plt.show()
+
 
     def formCounterSynergy(self):
         hero_count_in_features = self.hero_count + 1
@@ -241,15 +264,19 @@ class DOTA2Predictor:
                 for pairID in rt:
                     if result: # dire won
                         winMatrix[ID, pairID] += 1
+                        lossMatrix[pairID, ID] += 1
                     else:
                         lossMatrix[ID, pairID] += 1
+                        winMatrix[pairID, ID] += 1
 
             for ID in rt:
                 for pairID in dt:
                     if not result:  # radiant won
                         winMatrix[ID, pairID] += 1
+                        lossMatrix[pairID, ID] += 1
                     else:
                         lossMatrix[ID, pairID] += 1
+                        winMatrix[pairID, ID] += 1
 
         for i in range(0, hero_count_in_features):
             for j in range(0, hero_count_in_features):
@@ -260,11 +287,16 @@ class DOTA2Predictor:
                     if not totalSum:
                         ratioMatrix[i, j] = 0
                     else:
-                        ratioMatrix[i, j] = round(winMatrix[i, j] / totalSum, 2)
+                        ratioMatrix[i, j] = round(winMatrix[i, j] / totalSum, 4)
 
 
         self.counterSynergy = ratioMatrix
-        #plt.imshow(ratioMatrix, cmap='terrain', interpolation='hanning', vmin=0)
+        #plt.figure(5)
+        #plt.xlabel("HeroID")
+        #plt.ylabel("HeroID")
+        #plt.title("Counter synergies")
+        #plt.imshow(ratioMatrix, origin="low", interpolation="none", aspect="auto", cmap="inferno")
+        #plt.colorbar()
         #plt.show()
 
     def produceDataAnalysis(self):

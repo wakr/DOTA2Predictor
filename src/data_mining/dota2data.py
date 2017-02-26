@@ -1,5 +1,5 @@
 from toolz import dicttoolz, assoc, dissoc, take
-from database.mongo import insert_many
+from database.mongo import insert_many, db
 from settings import STEAMKEY
 
 import dota2api
@@ -63,6 +63,22 @@ def parse_match_ids_from_player_data(player_data):
     return list(map(lambda x: x['match_id'], player_data['matches']))
 
 
+def minify_data(collected):
+    minified = []
+    for c in collected:
+        rd_win = c['radiant_win']
+        match_id = c['match_id']
+        player_data = []
+        for p in c['players']:
+            h_id = p['hero_id']
+            p_slot = p['player_slot']
+            acc_id = p['account_id']
+            player_data.append({"hero_id": h_id, "player_slot": p_slot, "account_id": acc_id})
+
+        if len(player_data) == 10:
+            minified.append({"radiant_win": rd_win, "match_id": match_id, "players": player_data})
+    return minified
+
 def main():
 
     print("mining started")
@@ -82,8 +98,8 @@ def main():
                 match_details = api.get_match_details(match_id)
                 collective_match_data.append(match_details)
 
-
-        insert_many(collective_match_data)
+        minified = minify_data(collective_match_data)
+        insert_many(minified)
     except Exception as e:
         print(e)
 
@@ -95,3 +111,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
