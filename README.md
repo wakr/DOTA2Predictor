@@ -1,7 +1,11 @@
-#DOTA2 match predictor and hero win-rate visualization.
+#DOTA2 match predictor.
+
+[![Build Status](https://travis-ci.org/wakr/DOTA2Predictor.svg?branch=master)](https://travis-ci.org/wakr/DOTA2Predictor)
+
+![Deploy status](https://heroku-badge.herokuapp.com/?app=dota2-match-predictor)
 
 
-- 3 + 1 reports
+Url for the current system is https://dota2-match-predictor.herokuapp.com/
 
 
 ## Intructions
