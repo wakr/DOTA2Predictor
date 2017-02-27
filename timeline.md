@@ -16,5 +16,6 @@
 - 18.02. 3h heroku + website
 - 20.02. 3h writing report + fixes
 - 21.02. 2h writing
-- 24.04. 1h peer-review
-- 26.04. 3h Export images and start working report
+- 24.02. 1h peer-review
+- 26.02. 3h Export images and start working report
+- 27.02. 3h Presentation

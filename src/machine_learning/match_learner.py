@@ -2,6 +2,7 @@ from sklearn.ensemble import BaggingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import confusion_matrix
 
 from machine_learning.pre_analyzer import *
 
@@ -41,17 +42,18 @@ class DOTA2Predictor:
     def appendCrossFeatures(self, X, prediction=False):
         hero_count_in_features = self.hero_count + 1
 
+        appendCross = lambda original, match_heroes: original \
+                                               + get_heroSynergy_Diff(match_heroes, self.winnlossSynergy)\
+                                               + get_counterSynergy(match_heroes, self.counterSynergy)\
+                                               + get_winlosses(match_heroes, self.winLossRatios)\
+                                               + get_distr_amount(matchHeroes, self.top10Heroes)\
+
         # the data comes as a list
         if prediction:
             direSide = X[:hero_count_in_features]
             radiantSide = X[hero_count_in_features:]
             matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide)  # with real ID's
-
-            enriched = X + get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
-                  + get_counterSynergy(matchHeroes, self.counterSynergy) \
-                  + get_winlosses(matchHeroes, self.winLossRatios) \
-                  + get_synergy_rate(matchHeroes, self.synergyPairs) \
-                  + get_distr_amount(matchHeroes, self.top10Heroes)
+            enriched = appendCross(X, matchHeroes)
             return enriched
         else:
             # append win/loss
@@ -62,12 +64,7 @@ class DOTA2Predictor:
                 radiantSide = match[hero_count_in_features:]
                 matchHeroes = get_selected_heroes(direSide) + get_selected_heroes(radiantSide) # with real ID's
 
-                cfs = mls \
-                    + get_heroSynergy_Diff(matchHeroes, self.winnlossSynergy) \
-                    + get_counterSynergy(matchHeroes, self.counterSynergy) \
-                    + get_winlosses(matchHeroes, self.winLossRatios) \
-                    + get_synergy_rate(matchHeroes, self.synergyPairs) \
-                    + get_distr_amount(matchHeroes, self.top10Heroes) \
+                cfs = appendCross(mls, matchHeroes)
 
                 X2.append(cfs)
             return np.matrix(X2)
@@ -118,6 +115,8 @@ class DOTA2Predictor:
         print("Train error mean: " + str(self.train_error_mean))
         print("Test error mean: " + str(self.test_error_mean))
 
+        print("\nConfusion matrix (Radiant=0, Dire=1):")
+        print(confusion_matrix(ts_y, self.model.predict(ts_X)))
 
 
 

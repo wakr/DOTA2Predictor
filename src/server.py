@@ -3,6 +3,7 @@ import os
 import dota2api
 import json
 import _thread
+import threading
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_bootstrap import Bootstrap
@@ -70,14 +71,29 @@ def resultView():
         predict_vector = parseInputToFeatures(picks, heroes)
         prediction = [round(p, ndigits=2) for p in predictor.predict(predict_vector, True)[0]]
         winner = "Radiant" if predictor.predict(predict_vector)[0] else "Dire"
-        return render_template('results.html', dire_pred=prediction[0] * 100, radiant_pred=prediction[1] * 100, winner=winner)
+        selected = [heroes[ID-1] for ID in picks]
+        return render_template('results.html',
+                               selected=selected,
+                               dire_pred=prediction[0] * 100,
+                               radiant_pred=prediction[1] * 100,
+                               winner=winner)
 
 
 ############################################################
+
+def start_mining():
+    if miningOnStartUp:
+        time_range = 60 * 10
+        t = threading.Timer(time_range, start_mining)
+        t.daemon = True
+        t.start()
+        _thread.start_new_thread(mine, ())
+    else:
+        pass
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     print("Using port: " + str(port))
     initialize_app()
-    _thread.start_new_thread(mine, ()) if miningOnStartUp else None
+    start_mining()
     app.run(host='0.0.0.0', port=port)
