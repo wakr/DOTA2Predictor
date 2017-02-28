@@ -22,6 +22,7 @@ app.config['DEBUG'] = False
 Bootstrap(app)
 miningOnStartUp = True
 
+
 def get_resource_as_string(name, charset='utf-8'):
     with app.open_resource(name) as f:
         return f.read().decode(charset)
@@ -70,12 +71,12 @@ def resultView():
         print(picks)
         predict_vector = parseInputToFeatures(picks, heroes)
         prediction = [round(p, ndigits=2) for p in predictor.predict(predict_vector, True)[0]]
-        winner = "Radiant" if predictor.predict(predict_vector)[0] else "Dire"
+        winner = "Dire" if predictor.predict(predict_vector)[0] else "Radiant"
         selected = [heroes[ID-1] for ID in picks]
         return render_template('results.html',
                                selected=selected,
-                               dire_pred=prediction[0] * 100,
-                               radiant_pred=prediction[1] * 100,
+                               dire_pred=prediction[1] * 100,
+                               radiant_pred=prediction[0] * 100,
                                winner=winner)
 
 
