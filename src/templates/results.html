@@ -1,6 +1,9 @@
 {% extends "bootstrap/base.html" %}
 {% block title %}Prediction results{% endblock %}
 
+{% block navbar %}
+<style type=text/css>{{ get_resource_as_string('static/results.css') }}</style>
+{% endblock %}
 
 {% block content %}
     <div class="picks">

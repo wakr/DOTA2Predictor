@@ -19,3 +19,5 @@
 - 24.02. 1h peer-review
 - 26.02. 3h Export images and start working report
 - 27.02. 3h Presentation
+- 28.02. 1h Presentation
+- 02.02. 1h Presentation

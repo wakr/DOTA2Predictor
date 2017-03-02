@@ -1,0 +1,8 @@
+.picks {
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.radiant {
+    margin-bottom: 50px;
+}
