@@ -31,7 +31,7 @@ app.jinja_env.globals['get_resource_as_string'] = get_resource_as_string
 # End of application config
 
 matches = []
-heroes = []
+heroes = [] # note: [0] doesn't necessary mean hero 0
 predictor = None
 
 
@@ -72,7 +72,12 @@ def resultView():
         predict_vector = parseInputToFeatures(picks, heroes)
         prediction = [round(p, ndigits=2) for p in predictor.predict(predict_vector, True)[0]]
         winner = "Dire" if predictor.predict(predict_vector)[0] else "Radiant"
-        selected = [heroes[ID-1] for ID in picks]
+        #selected = [heroes[ID-1] for ID in picks]
+        selected = []
+        for id in picks:
+            for hero in heroes:
+                if hero['id'] == id:
+                    selected.append(hero)
         return render_template('results.html',
                                selected=selected,
                                dire_pred=prediction[1] * 100,
