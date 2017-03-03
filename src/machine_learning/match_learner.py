@@ -44,9 +44,9 @@ class DOTA2Predictor:
 
         appendCross = lambda original, match_heroes: original \
                                                + get_heroSynergy_Diff(match_heroes, self.winnlossSynergy)\
-                                               + get_counterSynergy(match_heroes, self.counterSynergy)\
-                                               + get_winlosses(match_heroes, self.winLossRatios)\
-                                               + get_distr_amount(matchHeroes, self.top10Heroes)\
+                                               + get_counterSynergy(match_heroes, self.counterSynergy) \
+                                               #+ get_distr_amount(match_heroes, self.top10Heroes) \
+                                               #+ get_winlosses(matchHeroes, self.winLossRatios)
 
         # the data comes as a list
         if prediction:
