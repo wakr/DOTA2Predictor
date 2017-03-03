@@ -78,6 +78,7 @@ def resultView():
             for hero in heroes:
                 if hero['id'] == id:
                     selected.append(hero)
+        picks = []
         return render_template('results.html',
                                selected=selected,
                                dire_pred=prediction[1] * 100,
